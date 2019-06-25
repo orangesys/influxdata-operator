@@ -28,5 +28,5 @@ jobs:
           paths:
             - vendor
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run: make deploy orgname=orangesys
+      - run: make build orgname=orangesys
 
