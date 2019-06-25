@@ -1,0 +1,24 @@
+default: &default
+  docker:
+    - image: circleci/golang:1.11
+  working_directory: /go/src/github.com/influxdata-operator
+
+version: 2
+
+jobs:
+  build:
+    <<: *default
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - gopkg-v1-{{ checksum "Gopkg.lock" }}
+      - run: make dep
+      - save_cache:
+          key: gopkg-v1-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: make deploy orgname=orangesys
+
