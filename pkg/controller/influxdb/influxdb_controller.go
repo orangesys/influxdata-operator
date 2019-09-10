@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -343,7 +344,7 @@ func newContainerResources(m *influxdatav1alpha1.Influxdb) corev1.ResourceRequir
 func newServicePorts(m *influxdatav1alpha1.Influxdb) []corev1.ServicePort {
 	var ports []corev1.ServicePort
 
-	ports = append(ports, corev1.ServicePort{Port: 8086, Name: "api"},
+	ports = append(ports, corev1.ServicePort{Port: 80, TargetPort: intstr.FromInt(8086), Name: "api"},
 		corev1.ServicePort{Port: 2003, Name: "graphite"},
 		corev1.ServicePort{Port: 25826, Name: "collectd"},
 		corev1.ServicePort{Port: 8089, Name: "udp"},
