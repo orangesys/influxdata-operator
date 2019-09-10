@@ -1,26 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: influxdb-config
+  labels:
+    app: influxdb
+data:
+  influxdb.conf: |+
+    reporting-disabled = false
+    bind-address = "127.0.0.1:8088"
+    storage-directory = "/var/lib/influxdb"
+    [meta]
+      dir = "/var/lib/influxdb/meta"
+      retention-autocreate = true
+      logging-enabled = true
+    [data]
+      dir = "/var/lib/influxdb/data"
+      wal-dir = "/var/lib/influxdb/wal"
+      query-log-enabled = true
+      cache-max-memory-size = 1073741824
+      cache-snapshot-memory-size = 26214400
+      cache-snapshot-write-cold-duration = "10m0s"
+      compact-full-write-cold-duration = "4h0m0s"
+      max-series-per-database = 1000000
+      max-values-per-tag = 100000
+      trace-logging-enabled = false
+    [coordinator]
+      write-timeout = "10s"
+      max-concurrent-queries = 0
+      query-timeout = "0s"
+      log-queries-after = "0s"
+      max-select-point = 0
+      max-select-series = 0
+      max-select-buckets = 0
+    [retention]
+      enabled = true
+      check-interval = "30m0s"
+    [shard-precreation]
+      enabled = true
+      check-interval = "10m0s"
+      advance-period = "30m0s"
+    [monitor]
+      store-enabled = true
+      store-database = "_internal"
+      store-interval = "10s"
+    [subscriber]
+      enabled = true
+      http-timeout = "30s"
+      insecure-skip-verify = false
+      ca-certs = ""
+      write-concurrency = 40
+      write-buffer-size = 1000
+    [http]
+      enabled = true
+      bind-address = ":8086"
+      auth-enabled = false
+      log-enabled = true
+      write-tracing = false
+      pprof-enabled = true
+      https-enabled = false
+      https-certificate = "/etc/ssl/influxdb.pem"
+      https-private-key = ""
+      max-row-limit = 10000
+      max-connection-limit = 0
+      shared-secret = "beetlejuicebeetlejuicebeetlejuice"
+      realm = "InfluxDB"
+      unix-socket-enabled = false
+      bind-socket = "/var/run/influxdb.sock"
+---
 apiVersion: influxdata.com/v1alpha1
 kind: Influxdb
 metadata:
-  name: influxdb
+  name: demo-influxdb
 spec:
   # Add fields here
   size: 1
-  baseImage: influxdb:1.7.7-meta-alpine
-  imagePullPolicy: Always
+  baseImage: orangesys/alpine-orangesys-influxdb:v1.7.7
+  imagePullPolicy: IfNotPresent
   pod:
     resources:
       limits:
-        cpu: 8
-        memory: 16Gi
+        cpu: 1
+        memory: 1Gi
       requests:
         cpu: 0.1
         memory: 256Mi
     persistentVolumeClaim:
       metadata:
-        name: "influxdb-data-pvc"
+        name: "demo-influxdb"
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: gp2
+        storageClassName: generic
         resources:
           requests:
-            storage: 8Gi
+            storage: 10Gi
